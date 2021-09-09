@@ -64,10 +64,10 @@ class KafkaClient():
         else:
             print('Define a Producer First Using Create Consumer Method')
 
-    def create_consumer(self, name: str, group_id: str, auto_commit: bool = True, offset: str = 'earliest', key_deserializer=None, value_deserializer=None):
+    def create_consumer(self, topics: str, group_id: str, auto_commit: bool = True, offset: str = 'earliest', key_deserializer=None, value_deserializer=None):
         try:
             self.consumer = KafkaConsumer(
-                name=name,
+                topics,
                 client_id=self.id,
                 bootstrap_servers=self.kafka_servers,
                 auto_offset_reset=offset,
@@ -114,9 +114,9 @@ if __name__ == "__main__":
         value_serializer=lambda x: dumps(x).encode('utf-8'))
 
     kf_client.create_consumer(
-        name='Reiten-Text-Corpus',
-        auto_offset_reset='earliest',
-        enable_auto_commit=True,
+        topics='Reiten-Text-Corpus',
+        offset='earliest',
+        auto_commit=True,
         group_id='text-corpus-reader',
         value_deserializer=lambda x: loads(x.decode('utf-8')))
 
