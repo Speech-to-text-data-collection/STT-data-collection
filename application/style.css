@@ -166,3 +166,13 @@ input[type=checkbox]:checked ~ aside {
     margin: 0 auto;
   }
 }
+
+
+/* New Code */
+#text-corpus{
+  margin: 1rem;
+  margin-left: 0px;
+
+  font-size: 14px;
+  text-align: center;
+}

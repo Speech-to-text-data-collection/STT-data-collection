@@ -1,3 +1,43 @@
+// New Code 
+// https://stackoverflow.com/questions/27220859/record-audio-from-user-and-save-to-server
+let message = document.getElementById('text-corpus')
+let new_message_button = document.getElementById('new-text-btn')
+
+const updateMessage = (new_message) => {
+  message.innerText = new_message.message
+  return 
+}
+
+const loading = () => {
+  message.innerText = "Loading ..."
+}
+
+
+// Initialize dumme message
+let message_recived = {
+  id : "1", 
+  message : 'no message'
+}
+updateMessage(message_recived)
+
+
+new_message_button.addEventListener('click', (e) => {
+  // Send api request to fetch message
+  message_recived = {
+    id : "2",
+    message : "new Message"
+  }
+
+
+  loading()
+  setTimeout(() => {
+    updateMessage(message_recived)
+  }, 2000)
+  
+})
+
+
+
 // set up basic variables for app
 
 const record = document.querySelector('.record');
@@ -59,11 +99,17 @@ if (navigator.mediaDevices.getUserMedia) {
       const clipLabel = document.createElement('p');
       const audio = document.createElement('audio');
       const deleteButton = document.createElement('button');
+      // new code
+      const sendButton = document.createElement('button')
 
       clipContainer.classList.add('clip');
       audio.setAttribute('controls', '');
       deleteButton.textContent = 'Delete';
       deleteButton.className = 'delete';
+      // new code
+      sendButton.textContent = 'Send';
+      sendButton.className = 'send';
+
 
       if(clipName === null) {
         clipLabel.textContent = 'My unnamed clip';
@@ -73,10 +119,12 @@ if (navigator.mediaDevices.getUserMedia) {
 
       clipContainer.appendChild(audio);
       clipContainer.appendChild(clipLabel);
+      clipContainer.appendChild(sendButton); // new code
       clipContainer.appendChild(deleteButton);
       soundClips.appendChild(clipContainer);
 
       audio.controls = true;
+      console.log('Audio chunks => ', chunks)
       const blob = new Blob(chunks, { 'type' : 'audio/ogg; codecs=opus' });
       chunks = [];
       const audioURL = window.URL.createObjectURL(blob);
@@ -86,6 +134,21 @@ if (navigator.mediaDevices.getUserMedia) {
       deleteButton.onclick = function(e) {
         let evtTgt = e.target;
         evtTgt.parentNode.parentNode.removeChild(evtTgt.parentNode);
+      }
+
+      // new code
+      sendButton.onclick = function(e){
+        var xhr=new XMLHttpRequest();
+        xhr.onload=function(e) {
+          if(this.readyState === 4) {
+              console.log("Server returned: ",e.target.responseText);
+          }
+        };
+        // var fd=new FormData();
+        // fd.append("audio_data",blob, message_recived.id);
+        // xhr.open("POST","upload.php",true);
+        // xhr.send(fd);
+        print('Sending => ', blob)
       }
 
       clipLabel.onclick = function() {
