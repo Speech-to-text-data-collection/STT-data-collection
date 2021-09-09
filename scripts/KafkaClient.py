@@ -1,6 +1,7 @@
 from kafka.admin import KafkaAdminClient, NewTopic
 from kafka import KafkaProducer, KafkaConsumer
 from kafka import KafkaConsumer
+from json import dumps, loads
 
 
 class KafkaClient():
@@ -40,7 +41,7 @@ class KafkaClient():
         except Exception as e:
             print(e)
 
-    def create_producer(self, key_serializer=None, value_serializer=None, acks: int = 1, retries: int = 3, max_in_flight_requests_per_connection: int = 5):
+    def create_producer(self, key_serializer=None, value_serializer=None, acks: int = 1, retries: int = 0, max_in_flight_requests_per_connection: int = 5):
         try:
             self.producer = KafkaProducer(
                 client_id=self.id,
@@ -48,7 +49,9 @@ class KafkaClient():
                 key_serializer=key_serializer,
                 value_serializer=value_serializer,
                 acks=acks,
-                retries=retries)
+                retries=retries,
+                max_in_flight_requests_per_connection=max_in_flight_requests_per_connection
+            )
         except Exception as e:
             print(e)
 
@@ -87,6 +90,7 @@ class KafkaClient():
                 for index, message in enumerate(self.consumer):
                     while index <= amount:
                         message = message.value
+                        print(index, message)
                         return_data.append(f'{index}-{message}')
 
                 return return_data
@@ -96,9 +100,14 @@ class KafkaClient():
         else:
             print('Define a Consumer First Using Create Consumer Method')
 
+    def get_json_serializer(self):
+        return lambda x: dumps(x).encode('utf-8')
+
+    def get_json_deserializer(self):
+        return lambda x: loads(x.decode('utf-8'))
+
 
 if __name__ == "__main__":
-    from json import dumps, loads
 
     kf_client = KafkaClient(
         'milkyb',
@@ -111,16 +120,16 @@ if __name__ == "__main__":
     print(kf_client.get_topics())
 
     kf_client.create_producer(
-        value_serializer=lambda x: dumps(x).encode('utf-8'))
+        value_serializer=kf_client.get_json_serializer())
 
     kf_client.create_consumer(
         topics='Reiten-Text-Corpus',
         offset='earliest',
         auto_commit=True,
         group_id='text-corpus-reader',
-        value_deserializer=lambda x: loads(x.decode('utf-8')))
+        value_deserializer=kf_client.get_json_deserializer())
 
     kf_client.send_data(topic_name='Reiten-Text-Corpus',
-                        data_list=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+                        data_list=[{'number': 1}, {'number': 2}, {'number': 3}, {'number': 4}, {'number': 5}, {'number': 6}, {'number': 7}, {'number': 8}, {'number': 9}, {'number': 10}, {'number': 11}, {'number': 12}, {'number': 13}, {'number': 14}, {'number': 15}])
 
     print(kf_client.get_data(10))
