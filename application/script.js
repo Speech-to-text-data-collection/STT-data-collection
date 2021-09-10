@@ -1,38 +1,95 @@
 // New Code 
 // https://stackoverflow.com/questions/27220859/record-audio-from-user-and-save-to-server
+
+const GET_END_POINT = 'https://jsonplaceholder.typicode.com/posts/1'
+const POST_END_POINT = 'https://jsonplaceholder.typicode.com/posts'
+
 let message = document.getElementById('text-corpus')
 let new_message_button = document.getElementById('new-text-btn')
+
+// Initialize dumme message
+let message_recived = {
+  id : "1", 
+  message : ''
+}
 
 const updateMessage = (new_message) => {
   message.innerText = new_message.message
   return 
 }
+updateMessage(message_recived)
+
 
 const loading = () => {
   message.innerText = "Loading ..."
 }
 
+const button_status = () => {
+  if (!message_recived.message){
+    record.classList.add('hidden')
+    stop.classList.add('hidden')
 
-// Initialize dumme message
-let message_recived = {
-  id : "1", 
-  message : 'no message'
+  } else{
+    record.classList.remove('hidden')
+    stop.classList.remove('hidden')
+  }
 }
-updateMessage(message_recived)
+
+
+const get_message = () => {
+  axios.get(GET_END_POINT).then(function (response) {
+    console.log(response.data);
+    message_recived = {
+      id : response.data.id,
+      message : response.data.title
+    }
+    updateMessage(message_recived)
+    console.log("Axios")
+
+    button_status()
+  }).catch(function (error) {
+    console.error(error);
+  });
+}
+
+
+const send_audio = (blob) => {
+  the_audio_data = {userId: '1211', title:"send audio", body:"body audio"}
+  
+  // # use this to send audio file
+  // let audioData = new FormData()
+  // audioData.append("id", message_recived.id)
+  // audioData.append("audio", blob)
+
+  let data = new FormData()
+  data.append('userId', '2322323')
+  data.append('title', 'send audio')
+  data.append('body', 'some audio content')
+
+  axios.post(POST_END_POINT,data)
+        .then(res => {
+          console.log(res)
+
+          // reset the message
+          message_recived = {
+            id : "1", 
+            message : ''
+          }
+
+          // remove the all audio files.
+          alert("Audio Saved!")
+          setTimeout(() => {
+            window.location.reload()
+          }, 1000)
+        })
+
+}
 
 
 new_message_button.addEventListener('click', (e) => {
   // Send api request to fetch message
-  message_recived = {
-    id : "2",
-    message : "new Message"
-  }
-
-
   loading()
-  setTimeout(() => {
-    updateMessage(message_recived)
-  }, 2000)
+  get_message()
   
 })
 
@@ -138,17 +195,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
       // new code
       sendButton.onclick = function(e){
-        var xhr=new XMLHttpRequest();
-        xhr.onload=function(e) {
-          if(this.readyState === 4) {
-              console.log("Server returned: ",e.target.responseText);
-          }
-        };
-        // var fd=new FormData();
-        // fd.append("audio_data",blob, message_recived.id);
-        // xhr.open("POST","upload.php",true);
-        // xhr.send(fd);
-        print('Sending => ', blob)
+        send_audio(blob)
       }
 
       clipLabel.onclick = function() {
@@ -239,3 +286,7 @@ window.onresize = function() {
 }
 
 window.onresize();
+
+
+// put for initial loading.
+button_status()
