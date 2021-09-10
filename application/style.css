@@ -176,3 +176,11 @@ input[type=checkbox]:checked ~ aside {
   font-size: 14px;
   text-align: center;
 }
+
+.hidden{
+  display: none;
+}
+
+.show{
+  display: block;
+}
