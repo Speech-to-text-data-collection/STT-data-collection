@@ -1,0 +1,5 @@
+# For Kafka Cluster Accessing and Operations
+kafka-python==2.0.2
+# For request handling server
+fastapi==0.68.1
+python-multipart==0.0.5
