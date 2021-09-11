@@ -57,7 +57,7 @@ async def handle_upload_audio(file: UploadFile = File(...)):
 
         # return Success or Failure
         # return {'filename': file.filename, 'content_type': file.content_type}
-        return {'status': 'success'}
+        return {'filename': file.filename, 'content_type': file.content_type, 'status': 'success'}
 
     except Exception as e:
         print(e)
