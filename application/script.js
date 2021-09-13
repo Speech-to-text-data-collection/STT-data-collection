@@ -4,7 +4,7 @@
 // const GET_END_POINT = 'https://jsonplaceholder.typicode.com/posts/1'
 const GET_END_POINT = "http://localhost:8000/fetch-text";
 // const POST_END_POINT = 'https://jsonplaceholder.typicode.com/posts'
-const POST_END_POINT = "http://127.0.0.1:8000/upload-audio";
+const POST_END_POINT = "http://localhost:8000/upload-audio";
 
 let message = document.getElementById("text-corpus");
 let new_message_button = document.getElementById("new-text-btn");
@@ -57,17 +57,17 @@ const get_message = () => {
 const send_audio = (blob) => {
   the_audio_data = { userId: "1211", title: "send audio", body: "body audio" };
 
-  // # use this to send audio file
-  // let audioData = new FormData()
-  // audioData.append("id", message_recived.id)
-  // audioData.append("audio", blob)
+  // use this to send audio file
+  let audioData = new FormData();
+  audioData.append("id", message_recived.id);
+  audioData.append("audio", blob);
 
-  let data = new FormData();
-  data.append("userId", "2322323");
-  data.append("title", "send audio");
-  data.append("body", "some audio content");
+  // let data = new FormData();
+  // data.append("userId", "2322323");
+  // data.append("title", "send audio");
+  // data.append("body", "some audio content");
 
-  axios.post(POST_END_POINT, data).then((res) => {
+  axios.post(POST_END_POINT, audioData).then((res) => {
     console.log(res);
 
     // reset the message

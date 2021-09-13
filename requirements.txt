@@ -3,3 +3,6 @@ kafka-python==2.0.2
 # For request handling server
 fastapi==0.68.1
 python-multipart==0.0.5
+# For AWS communication
+boto3==1.18.23
+pandas==1.2.4
