@@ -50,7 +50,7 @@ DAG_CONFIG = {
     'email_on_retry': False,
     'retries': 5,
     'retry_delay': timedelta(minutes=1),
-    'schedule_interval': '0 0 0/6 ? * * *',
+    'schedule_interval': '0 0/5 0 ? * * *',
 }
 
 # Declaring DAG used functions
