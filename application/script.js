@@ -179,7 +179,7 @@ if (navigator.mediaDevices.getUserMedia) {
 
       audio.controls = true;
       console.log("Audio chunks => ", chunks);
-      const blob = new Blob(chunks, { type: "audio/ogg; codecs=opus" });
+      const blob = new Blob(chunks, { type: "audio/wav" });
       chunks = [];
       const audioURL = window.URL.createObjectURL(blob);
       audio.src = audioURL;

@@ -1,9 +1,10 @@
 from fastapi import FastAPI, File, UploadFile, Form, BackgroundTasks
 from fastapi.param_functions import Form
+from fastapi.middleware.cors import CORSMiddleware
 from KafkaClient import KafkaClient
 from AWSClient import AWSClient
 from datetime import datetime, timezone
-from fastapi.middleware.cors import CORSMiddleware
+import uuid
 
 # Create an AWSClient to upload files to S3 Bucket
 server_aws_client = AWSClient()
@@ -72,6 +73,8 @@ def generate_file_data(file: UploadFile):
     file_link = server_aws_client.get_file_link(
         'unprocessed-stt-audio', file.filename)
 
+    print('FileName', file.filename)
+
     text_id, audio_id = file.filename.split('_')
 
     upload_time = datetime.now(timezone.utc)
@@ -137,21 +140,24 @@ async def fetch_text():
 #     print(type(id))
 #     print(type(audio))
 #     return {}
-async def handle_upload_audio(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
+async def handle_upload_audio(background_tasks: BackgroundTasks, id=Form(...), audio: UploadFile = File(...)):
     try:
+        # Dynamically naming the audio file
+        time = datetime.now(timezone.utc)
+        time = time.strftime("%H%M%S")
+        audio.filename = str(id) + '_' + str(uuid.uuid4()) + time + '.wav'
+
         # Validate if file is audio
-        assert validate_file(file)
-        # Upload file to S3 Bucket
-        # assert await upload_file(file)
-        background_tasks.add_task(upload_file, file)
-        # Send Data to Kafka the text id and reference link from S3 using the producer
-        # await send_detail_to_kafka(file)
+        assert validate_file(audio)
+
+        # Upload file to S3 Bucket and Send Data to Kafka the text id and reference link from S3 using the producer
+        background_tasks.add_task(upload_file, audio)
 
         # return Success or Failure
-        return {'filename': file.filename, 'content_type': file.content_type, 'status': 'success', 'detail': 'File Upload Successful'}
+        return {'filename': audio.filename, 'content_type': audio.content_type, 'status': 'success', 'detail': 'File Upload Successful'}
 
     except AssertionError:
-        return {'filename': file.filename, 'content_type': file.content_type, 'status': 'failure', 'detail': 'File Type Not Audio'}
+        return {'filename': audio.filename, 'content_type': audio.content_type, 'status': 'failure', 'detail': 'File Type Not Audio'}
 
     except Exception as e:
         print(e)
