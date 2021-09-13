@@ -106,6 +106,18 @@ class AWSClient():
             logger.exception('FAILED TO UPLOAD FILE')
             raise Exception
 
+    def put_file(self, bucket_name: str, file_contents, key: str) -> None:
+        try:
+            self.s3_resource.Object(bucket_name,
+                                    key, ExtraArgs={'ACL': 'public-read'}).put(Body=file_contents)
+
+            logger.info(
+                f'{key} PUT SUCCESSFULLY TO BUCKET {bucket_name} USING BODY DATA')
+
+        except Exception as e:
+            logger.exception('FAILED TO PUT FILE')
+            raise Exception
+
     def upload_file_bytes(self, data, bucket_name: str, file_name: str, encode: bool = False):
         try:
             if encode:

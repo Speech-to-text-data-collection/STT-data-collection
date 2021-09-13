@@ -1,4 +1,5 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form, BackgroundTasks
+from fastapi.param_functions import Form
 from KafkaClient import KafkaClient
 from AWSClient import AWSClient
 from datetime import datetime, timezone
@@ -56,16 +57,15 @@ async def validate_file(file: UploadFile) -> bool:
         # return False
 
 
-async def upload_file(file: UploadFile) -> bool:
+async def upload_file(file: UploadFile):
     try:
         server_aws_client.upload_file_object(
             file.file, 'unprocessed-stt-audio', file.filename)
 
-        return True
+        await send_detail_to_kafka(file)
 
     except Exception as e:
         print(e)
-        return False
 
 
 def generate_file_data(file: UploadFile):
@@ -96,10 +96,6 @@ async def send_detail_to_kafka(file: UploadFile):
         print(e)
 
 
-# List for holding fetched text values
-fetched_data = []
-
-
 app = FastAPI()
 
 origins = ["*"]
@@ -111,6 +107,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# List for holding fetched text values
+fetched_data = []
 
 
 @app.get('/fetch-text')
@@ -133,20 +132,26 @@ async def fetch_text():
 
 
 @app.post('/upload-audio')
-async def handle_upload_audio(file: UploadFile = File(...)):
+# async def handle_upload_audio(id=Form(...), audio=Form(...)):
+#     print(id)
+#     print(type(id))
+#     print(type(audio))
+#     return {}
+async def handle_upload_audio(background_tasks: BackgroundTasks, file: UploadFile = File(...)):
     try:
         # Validate if file is audio
-        if(await validate_file(file)):
-            # Upload file to S3 Bucket
-            assert await upload_file(file)
-            # Send Data to Kafka the text id and reference link from S3 using the producer
-            await send_detail_to_kafka(file)
+        assert validate_file(file)
+        # Upload file to S3 Bucket
+        # assert await upload_file(file)
+        background_tasks.add_task(upload_file, file)
+        # Send Data to Kafka the text id and reference link from S3 using the producer
+        # await send_detail_to_kafka(file)
 
         # return Success or Failure
         return {'filename': file.filename, 'content_type': file.content_type, 'status': 'success', 'detail': 'File Upload Successful'}
 
     except AssertionError:
-        return {'filename': file.filename, 'content_type': file.content_type, 'status': 'failure', 'detail': 'File Upload Failed'}
+        return {'filename': file.filename, 'content_type': file.content_type, 'status': 'failure', 'detail': 'File Type Not Audio'}
 
     except Exception as e:
         print(e)
