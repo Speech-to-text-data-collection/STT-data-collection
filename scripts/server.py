@@ -2,6 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from KafkaClient import KafkaClient
 from AWSClient import AWSClient
 from datetime import datetime, timezone
+from fastapi.middleware.cors import CORSMiddleware
 
 # Create an AWSClient to upload files to S3 Bucket
 server_aws_client = AWSClient()
@@ -101,6 +102,16 @@ fetched_data = []
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get('/fetch-text')
 async def fetch_text():
@@ -113,6 +124,8 @@ async def fetch_text():
 
     # Pop a Data Value from fetched_data list
     return_data = fetched_data.pop(0)
+    id = list(return_data.keys())[0]
+    return_data = {'id': id, 'text': return_data[id]}
     print("\t-> Returning:", return_data)
 
     # Return Data Value (id and text)
