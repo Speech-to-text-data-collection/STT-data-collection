@@ -58,18 +58,18 @@ async def validate_file(file: UploadFile) -> bool:
         # return False
 
 
-async def upload_file(file: UploadFile):
+async def upload_file(file: UploadFile, text: str):
     try:
         server_aws_client.upload_file_object(
             file.file, 'unprocessed-stt-audio', file.filename)
 
-        await send_detail_to_kafka(file)
+        await send_detail_to_kafka(file, text)
 
     except Exception as e:
         print(e)
 
 
-def generate_file_data(file: UploadFile):
+def generate_file_data(file: UploadFile, text: str):
     file_link = server_aws_client.get_file_link(
         'unprocessed-stt-audio', file.filename)
 
@@ -80,7 +80,7 @@ def generate_file_data(file: UploadFile):
     date = upload_time.strftime("%m/%d/%y")
     time = upload_time.strftime("%H:%M:%S")
 
-    data = {'file_name': file.filename, 'content_type': file.content_type, 'text_id': text_id, 'audio_id': audio_id,
+    data = {'text': text, 'file_name': file.filename, 'content_type': file.content_type, 'text_id': text_id, 'audio_id': audio_id,
             'link': file_link, 'upload_date (UTC)': date, 'upload_time (UTC)': time}
 
     return data
@@ -134,18 +134,19 @@ async def fetch_text():
 
 
 @app.post('/upload-audio')
-async def handle_upload_audio(background_tasks: BackgroundTasks, id=Form(...), audio: UploadFile = File(...)):
+async def handle_upload_audio(background_tasks: BackgroundTasks, id: str = Form(...), text: str = Form(...), audio: UploadFile = File(...)):
     try:
         # Dynamically naming the audio file
         time = datetime.now(timezone.utc)
         time = time.strftime("%H%M%S")
-        audio.filename = str(id) + '_' + str(uuid.uuid4()) + time + '.wav'
+        audio.filename = str(id) + '_' + str(uuid.uuid4()
+                                             ) + '-' + time + '.wav'
 
         # Validate if file is audio
         assert validate_file(audio)
 
         # Upload file to S3 Bucket and Send Data to Kafka the text id and reference link from S3 using the producer
-        background_tasks.add_task(upload_file, audio)
+        background_tasks.add_task(upload_file, audio, text)
 
         # return Success or Failure
         return {'filename': audio.filename, 'content_type': audio.content_type, 'status': 'success', 'detail': 'File Upload Successful'}
