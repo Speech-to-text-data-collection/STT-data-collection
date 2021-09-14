@@ -12,6 +12,7 @@ The purpose of this challenge is to build a data engineering pipeline that allow
   - [Technolologies](#technolologies)
   - [Contributers](#contributers)
   - [License](#license)
+  - [Acknowledgment](#Acknowledgment)
 
 
 ## Introduction
@@ -47,13 +48,17 @@ There are many text corpuses for Amharic and Swahili. Our client 10 academy want
 
 ## Contributers
 - [Milky Bekele](https://github.com/DePacifier)
-- [Bethelhem Sisay]()
+- [Bethelhem Sisay](https://github.com/Bethelsis)
 - [Natnael Sisay](https://github.com/NatnaelSisay)
-- [Chimdessa_Tesfaye]()
-- [Harriet_Sibitenda]()
-- [Luel]()
-- [Michael Tekle]()
-- [Mizan_Abaynew]()
+- [Chimdessa_Tesfaye](https://github.com/chimdessa-tesfe/)
+- [Harriet_Sibitenda](https://github.com/SibitendaHarriet)
+- [Luel Hagos](https://github.com/Luel-Hagos)
+- [Michael Tekle](https://github.com/maxi1571)
+- [Mizan_Abaynew](https://github.com/miz-ab)
 
 ## License
 [MIT](https://github.com/DePacifier/3DEP-Farm/blob/main/LICENSE)
+
+
+## Acknowledgment
+- [Amharic speech recognition](https://github.com/10acad-group3/speech_recognition)
