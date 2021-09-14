@@ -109,7 +109,7 @@ class AWSClient():
     def put_file(self, bucket_name: str, file_contents, key: str) -> None:
         try:
             self.s3_resource.Object(bucket_name,
-                                    key, ExtraArgs={'ACL': 'public-read'}).put(Body=file_contents)
+                                    key).put(Body=file_contents, ACL='public-read')
 
             logger.info(
                 f'{key} PUT SUCCESSFULLY TO BUCKET {bucket_name} USING BODY DATA')

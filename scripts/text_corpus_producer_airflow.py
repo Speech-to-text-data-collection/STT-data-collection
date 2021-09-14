@@ -1,6 +1,5 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator, ShortCircuitOperator
-from airflow.operators.bash import BashOperator
 
 from KafkaClient import KafkaClient
 from AWSClient import AWSClient
@@ -9,7 +8,6 @@ from logger_creator import CreateLogger
 from datetime import datetime, timedelta
 from random import randint
 from json import loads
-import sys
 
 # Configuration Variables
 bucket_name = 'unprocessed-stt'
@@ -19,12 +17,12 @@ kafka_servers = [
     'localhost:9094'
 ]
 # Creating Logger
-logger = CreateLogger('Airflow-Audio-Input-storer', handlers=1)
+logger = CreateLogger('Airflow-Text-Corpus-Producer', handlers=1)
 logger = logger.get_default_logger()
 
 # Instantating a KafkaClient Object
 kf_client = KafkaClient(
-    'audio-data-description-storer-DAG',
+    'text-corpus-producer-DAG',
     kafka_servers
 )
 
