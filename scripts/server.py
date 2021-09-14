@@ -73,9 +73,8 @@ def generate_file_data(file: UploadFile):
     file_link = server_aws_client.get_file_link(
         'unprocessed-stt-audio', file.filename)
 
-    print('FileName', file.filename)
-
     text_id, audio_id = file.filename.split('_')
+    audio_id = audio_id.split('.')[0]
 
     upload_time = datetime.now(timezone.utc)
     date = upload_time.strftime("%m/%d/%y")
@@ -135,11 +134,6 @@ async def fetch_text():
 
 
 @app.post('/upload-audio')
-# async def handle_upload_audio(id=Form(...), audio=Form(...)):
-#     print(id)
-#     print(type(id))
-#     print(type(audio))
-#     return {}
 async def handle_upload_audio(background_tasks: BackgroundTasks, id=Form(...), audio: UploadFile = File(...)):
     try:
         # Dynamically naming the audio file
