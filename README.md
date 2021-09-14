@@ -19,7 +19,8 @@ There are many text corpuses for Amharic and Swahili. Our client 10 academy want
 
 ## Pipeline
 > The diagram below depicts the proposed pipeline with all the tools that will be used for implementation
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Data Handling and Processing Pipeline")
+
+![alt text](https://github.com/Speech-to-text-data-collection/STT-data-collection/blob/main/data/Flowchart_Diagram.jpg "Data Handling and Processing Pipeline")
 ### Pipeline Description
 >   The pipeline consists of five major parts. Starting from the application part, it will be in charge of handling the interaction with the user. The user can request texts to dictate (audio recording of the text) and send their dictation using the application. These actions create a JavaScript-based request and send it to a python server. This server will handle the text request by acting as a consumer for the 'Text-Corpus' topic in the Kafka Cluster. It will load the entire data when requesting for the first time and provides single data entities to the application until it finishes the fetched data. It handles the dictated audio input first by uploading the audio data to an S3 bucket and then passes references of the audio data to the Kafka Cluster, acting as a producer for the 'Text-Audio-Input' topic.
 >
