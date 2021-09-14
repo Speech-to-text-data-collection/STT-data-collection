@@ -13,6 +13,11 @@ import sys
 # Configuration Variables
 csv_file_name = 'audio_descriptions.csv'
 bucket_name = 'unprocessed-stt-audio'
+kafka_servers = [
+    'localhost:9092',
+    'localhost:9093',
+    'localhost:9094'
+]
 
 # Creating Logger
 logger = CreateLogger('Airflow-Audio-Input-storer', handlers=1)
@@ -21,11 +26,7 @@ logger = logger.get_default_logger()
 # Instantating a KafkaClient Object
 kf_client = KafkaClient(
     'audio-data-description-storer-DAG',
-    [
-        'localhost:9092',
-        'localhost:9093',
-        'localhost:9094'
-    ]
+    kafka_servers
 )
 
 # Creating a Consumer using for the KafkaClient
@@ -33,7 +34,7 @@ kf_client.create_consumer(
     topics='Text-Audio-input',
     offset='earliest',
     auto_commit=True,
-    group_id='abebe',
+    group_id='airflow-text-audio-input-reader',
     value_deserializer=kf_client.get_json_deserializer(),
     timeout=1000
 )
@@ -116,6 +117,7 @@ def _save_csv_file(ti):
         sys.exit(1)
 
 
+# DAG
 with DAG('audio-data-description-storer', catchup=False, default_args=DAG_CONFIG) as dag:
     # read data from kafka text-audio-input topic
     reading_kafka_data = [

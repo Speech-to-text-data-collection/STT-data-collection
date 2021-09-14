@@ -88,9 +88,9 @@ def generate_file_data(file: UploadFile, text: str):
 # Using  Upload audio file to S3 Bucket and pass the link to kafka servers
 
 
-async def send_detail_to_kafka(file: UploadFile):
+async def send_detail_to_kafka(file: UploadFile, text: str):
     try:
-        file_data = generate_file_data(file)
+        file_data = generate_file_data(file, text)
 
         server_kafka_consumer.send_data('Text-Audio-input', [file_data])
 
