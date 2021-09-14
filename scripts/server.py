@@ -24,7 +24,7 @@ server_kafka_consumer.create_consumer(
     topics='Text-Corpus',
     offset='earliest',
     auto_commit=True,
-    group_id='abebe',
+    group_id='server-consumer',
     value_deserializer=server_kafka_consumer.get_json_deserializer(),
     timeout=1000
 )
