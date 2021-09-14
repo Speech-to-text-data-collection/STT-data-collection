@@ -60,12 +60,8 @@ const send_audio = (blob) => {
   // use this to send audio file
   let audioData = new FormData();
   audioData.append("id", message_recived.id);
+  audioData.append("text", message_recived.text);
   audioData.append("audio", blob);
-
-  // let data = new FormData();
-  // data.append("userId", "2322323");
-  // data.append("title", "send audio");
-  // data.append("body", "some audio content");
 
   axios.post(POST_END_POINT, audioData).then((res) => {
     console.log(res);
