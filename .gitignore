@@ -131,3 +131,4 @@ dmypy.json
 
 # Custom
 /data/preprocessed/
+/data/processed_text_corpus/

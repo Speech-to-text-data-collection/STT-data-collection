@@ -97,7 +97,7 @@ class AWSClient():
     def upload_file(self, bucket_name: str, file_name: str, key: str) -> None:
         try:
             self.s3_resource.Object(bucket_name,
-                                    key, ExtraArgs={'ACL': 'public-read'}).upload_file(Filename=file_name)
+                                    key).upload_file(Filename=file_name, ExtraArgs={'ACL': 'public-read'})
 
             logger.info(
                 f'{file_name} UPLOADED SUCCESSFULLY TO BUCKET {bucket_name} as {key}')
